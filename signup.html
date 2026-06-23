@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkEase - Sign Up</title>
+
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="auth.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link 
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" 
+    rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="auth-card">
+
+            <h1>ParkEase</h1>
+
+            <h2>Create Your Account</h2>
+
+            <form id="signupForm">
+
+                <div class="input-group">
+
+                    <label>Full Name</label>
+
+                    <input 
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                    required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Email Address</label>
+
+                    <input 
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Password</label>
+
+                    <input 
+                    type="password"
+                    id="password"
+                    placeholder="Create a password"
+                    required>
+
+                </div>
+
+
+                <div class="role-selection">
+
+                    <p>I want to:</p>
+
+                    <label>
+                        <input 
+                        type="radio"
+                        id="driver"
+                        name="role"
+                        value="driver"
+                        required>
+
+                        Find Parking (Driver)
+                    </label>
+
+
+                    <label>
+                        <input 
+                        type="radio"
+                        id="owner"
+                        name="role"
+                        value="owner">
+
+                        Rent My Space (Owner)
+                    </label>
+
+                </div>
+
+
+                <button type="submit" class="auth-btn">
+
+                    Create Account
+
+                </button>
+
+
+                <p class="switch-page">
+
+                    Already have an account?
+
+                    <a href="login.html">
+                        Login
+                    </a>
+
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+    <script type="module" src="auth.js"></script>
+
+</body>
+</html>

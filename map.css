@@ -1,0 +1,328 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* Body */
+body {
+    font-family: "Poppins", sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+/* Main dashboard */
+.dashboard {
+    display: flex;
+    height: 100vh;
+}
+
+
+/* ================= Sidebar ================= */
+
+.sidebar {
+    width: 220px;
+    background: #111827;
+    color: white;
+    padding: 30px 20px;
+}
+
+.sidebar h2 {
+    color: #3b82f6;
+    margin-bottom: 40px;
+    font-size: 28px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sidebar ul li:hover {
+    background: #1e293b;
+}
+
+
+/* ================= Middle Section ================= */
+
+.main-content {
+    width: 35%;
+    background: #f5f7fa;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+
+/* Search bar and filter */
+
+.top-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.top-bar input {
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.top-bar select {
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+
+/* Parking Cards */
+
+#parking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.parking-card {
+    background: white;
+    padding: 22px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-left: 5px solid #0077ff;
+    transition: 0.3s;
+}
+
+.parking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.parking-card h3 {
+    color: #111;
+    margin-bottom: 12px;
+    font-size: 20px;
+}
+
+.parking-card p {
+    color: #555;
+    margin: 8px 0;
+    font-size: 15px;
+}
+
+
+/* Buttons inside parking cards */
+
+.parking-card button {
+    margin-top: 15px;
+    background: #0077ff;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.parking-card button:hover {
+    background: #005fd1;
+}
+
+
+/* ================= Map Section ================= */
+
+.map-container {
+    flex: 1;
+    height: 100%;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+
+/* ================= Mobile Responsive ================= */
+
+@media (max-width: 768px) {
+
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .sidebar ul {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .main-content {
+        width: 100%;
+        height: 40%;
+    }
+
+    .map-container {
+        height: 60%;
+    }
+
+    .top-bar {
+        flex-direction: column;
+    }
+}
+
+.status {
+    color: green;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.book-btn {
+    background: #16a34a !important;
+}
+
+.book-btn:hover {
+    background: #15803d !important;
+}
+
+/* =========================
+   PROFILE & BOOKING DESIGN
+========================= */
+
+.dashboard-section {
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+
+.profile-card,
+.booking-card {
+
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    text-align: center;
+    max-width: 500px;
+    margin: 20px auto;
+
+}
+
+
+.profile-icon {
+
+    font-size: 55px;
+    background: #e3f2fd;
+    width: 90px;
+    height: 90px;
+    margin: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+}
+
+
+.profile-card h2,
+.dashboard-section h2 {
+
+    color: #1a1a1a;
+    margin-top: 20px;
+
+}
+
+
+.profile-info {
+
+    margin-top: 25px;
+    text-align: left;
+
+}
+
+
+.profile-info p {
+
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+
+}
+
+
+#logout-btn {
+
+    margin-top: 25px;
+    background: #ff4d4d;
+    color: white;
+
+    border: none;
+    padding: 12px 30px;
+
+    border-radius: 25px;
+    cursor: pointer;
+
+    font-size: 15px;
+    transition: 0.3s;
+
+}
+
+
+#logout-btn:hover {
+
+    background: #d93636;
+    transform: scale(1.05);
+
+}
+
+
+.booking-card h3 {
+
+    color: #333;
+
+}
+
+
+.booking-card p {
+
+    color: #666;
+
+}
+
+
+/* Smooth appearance */
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
