@@ -10,13 +10,15 @@ import {
     query,
     where,
     doc,
+    getDoc,
     deleteDoc
 } from 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
     getAuth,
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut
 } from 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -143,7 +145,9 @@ async function loadMyParking() {
 
     const querySnapshot = await getDocs(q);
 
-
+    // Update total parking count on Dashboard
+    document.getElementById("totalParking").textContent =
+        querySnapshot.size;
     let data = "";
 
 
@@ -226,11 +230,95 @@ window.deleteParking = async function(parkingId) {
 
     }
 };
-onAuthStateChanged(auth, (user) => {
 
-    if(user) {
+onAuthStateChanged(auth, async (user) => {
 
-        loadMyParking(user);
+    if (user) {
+
+        // Load owner's parking
+        loadMyParking();
+
+
+        // Get owner details from Firestore
+        const userRef = doc(db, "users", user.uid);
+
+        const userSnap = await getDoc(userRef);
+
+
+        if (userSnap.exists()) {
+
+            const userData = userSnap.data();
+
+            document.getElementById("ownerName").textContent =
+                userData.name;
+
+            document.getElementById("ownerEmail").textContent =
+                userData.email;
+
+            document.getElementById("ownerRole").textContent =
+                userData.role;
+
+        }
+
+    } else {
+
+        // If not logged in, send to login page
+        window.location.href = "login.html";
+
+    }
+
+});
+
+// Make sidebar navigation work
+window.showSection = function(section) {
+
+    const dashboard = document.getElementById("dashboard-section");
+    const parking = document.getElementById("parking-section");
+    const earnings = document.getElementById("earnings-section");
+    const profile = document.getElementById("profile-section");
+
+    // Hide all sections
+    dashboard.style.display = "none";
+    parking.style.display = "none";
+    earnings.style.display = "none";
+    profile.style.display = "none";
+
+    // Show selected section
+    if (section === "dashboard") {
+        dashboard.style.display = "block";
+    }
+
+    else if (section === "parking") {
+        parking.style.display = "block";
+    }
+
+    else if (section === "earnings") {
+        earnings.style.display = "block";
+    }
+
+    else if (section === "profile") {
+        profile.style.display = "block";
+    }
+
+};
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async () => {
+
+    try {
+
+        await signOut(auth);
+
+        alert("Logged out successfully!");
+
+        window.location.href = "login.html";
+
+    }
+    catch(error) {
+
+        console.error(error);
+
+        alert("Logout failed!");
 
     }
 
