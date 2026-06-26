@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkEase Owner Dashboard</title>
+
+    <link rel="stylesheet" href="owner.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <h2>ParkEase</h2>
+
+        <ul>
+            <li onclick="showSection('dashboard')">🏠 Dashboard</li>
+            <li onclick="showSection('parking')">🅿 My Parking</li>
+            <li onclick="showSection('earnings')">📊 Earnings</li>
+            <li onclick="showSection('profile')">👤 Profile</li>
+        </ul>
+
+    </div>
+
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+
+    <!-- Dashboard -->
+    <div id="dashboard-section">
+
+        <h1>Welcome Owner 👋</h1>
+
+        <p>
+            Manage your parking spaces and track your earnings.
+        </p>
+
+        <div class="dashboard-cards">
+
+            <div class="card">
+                <h3>Total Parking</h3>
+                <p id="totalParking">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Earnings</h3>
+                <p>₹0</p>
+            </div>
+
+        </div>
+
+        <div class="form-container">
+
+            <h2>Add Your Parking Space</h2>
+
+            <form id="parkingForm">
+
+                <input type="text" id="parkingName"
+                placeholder="🅿 Parking Name" required>
+
+                <input type="number" id="slots"
+                placeholder="🚗 Total Parking Slots" required>
+
+                <input type="number" id="price"
+                placeholder="💰 Price per hour" required>
+
+                <select id="vehicle" required>
+
+                    <option value="">
+                        Select Vehicle Type
+                    </option>
+
+                    <option value="Car">
+                        Car
+                    </option>
+
+                    <option value="Bike">
+                        Bike
+                    </option>
+
+                    <option value="Both">
+                        Both
+                    </option>
+
+                </select>
+
+                <input type="number" step="any"
+                id="latitude"
+                placeholder="📍 Latitude" required>
+
+                <input type="number" step="any"
+                id="longitude"
+                placeholder="📍 Longitude" required>
+
+                <button type="submit">
+                    Add Parking
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- My Parking -->
+    <div id="parking-section" style="display:none;">
+
+        <h1>My Parking</h1>
+
+        <div id="myParkingList">
+            <!-- Owner parking cards will come from Firebase -->
+        </div>
+
+    </div>
+
+
+    <!-- Earnings -->
+    <div id="earnings-section" style="display:none;">
+
+        <h1>📊 Earnings</h1>
+
+        <div class="card">
+
+            <h3>Total Earnings</h3>
+
+            <p>₹0</p>
+
+            <p>No earnings yet</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Profile -->
+    <div id="profile-section" style="display:none;">
+
+    <h1>👤 Profile</h1>
+
+    <div class="card">
+
+        <p>
+            <strong>Name:</strong>
+            <span id="ownerName">Loading...</span>
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            <span id="ownerEmail">Loading...</span>
+        </p>
+
+        <p>
+            <strong>Role:</strong>
+            <span id="ownerRole">Loading...</span>
+        </p>
+
+        <button id="logoutBtn">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+<script type="module" src="owner.js"></script>
+</body>
+
+</html>
