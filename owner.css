@@ -144,3 +144,31 @@ button:hover {
     }
 
 }
+/* Vehicle Type Dropdown */
+.form-container select {
+
+    width: 100%;
+    padding: 14px 16px;
+
+    border: 1px solid #ddd;
+    border-radius: 12px;
+
+    background: white;
+    color: #333;
+
+    font-size: 15px;
+    font-family: "Poppins", sans-serif;
+
+    cursor: pointer;
+    outline: none;
+    transition: 0.3s;
+
+}
+
+/* Focus effect */
+.form-container select:focus {
+
+    border-color: #0077ff;
+    box-shadow: 0 0 8px rgba(0, 119, 255, 0.3);
+
+}
