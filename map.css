@@ -67,7 +67,8 @@ body {
 
 .top-bar {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 12px;
     margin-bottom: 25px;
 }
 
@@ -84,6 +85,49 @@ body {
     border-radius: 10px;
     border: 1px solid #ccc;
     cursor: pointer;
+}
+
+/* Search Button */
+
+#searchBtn {
+
+    height: 48px;
+    min-width: 90px;
+
+    background: #1e293b;
+    color: white;
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "Poppins", sans-serif;
+
+    cursor: pointer;
+    transition: 0.3s ease;
+
+    /* Perfect centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+}
+
+
+#searchBtn:hover {
+
+    background: #334155;
+    transform: translateY(-2px);
+
+}
+
+
+#searchBtn:active {
+
+    transform: scale(0.97);
+
 }
 
 
@@ -192,13 +236,13 @@ body {
 }
 
 .card-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    position: relative;
+    z-index: 9999;
 }
 
 .book-btn {
-    background: #16a34a !important;
+    position: relative;
+    z-index: 9999;
 }
 
 .book-btn:hover {
@@ -324,5 +368,44 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+
+}
+
+/* Search suggestions */
+.top-bar {
+    position: relative;
+}
+
+#suggestions {
+    position: absolute;
+    top: 55px;
+    left: 0;
+    width: 55%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+
+    
+}
+
+.suggestion-item {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:hover {
+    background: #f0f7ff;
+}
+
+.disabled-btn{
+
+    background:#999;
+    cursor:not-allowed;
+    color:white;
+    opacity:0.8;
 
 }
