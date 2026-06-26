@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>ParkLive — Real-Time Parking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="setup-banner" id="setupBanner" hidden>
+    <p><strong>Setup needed:</strong> open <code>app.js</code> and paste your Firebase project config into the
+      <code>FIREBASE_CONFIG</code> object near the top. Until that's filled in, this page has nothing to talk to.
+    </p>
+  </div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">P</span>
+      <div class="brand-text">
+        <h1>ParkLive</h1>
+        <p class="lot-name">Riverside Lot — live status</p>
+      </div>
+    </div>
+    <div class="connection-pill" id="connectionPill">
+      <span class="dot"></span>
+      <span id="connectionLabel">Connecting…</span>
+    </div>
+  </header>
+
+  <section class="board" aria-label="Live space count">
+    <div class="board-stat">
+      <span class="board-value" id="countAvailable">00</span>
+      <span class="board-label">Available</span>
+    </div>
+    <div class="board-divider" aria-hidden="true"></div>
+    <div class="board-stat">
+      <span class="board-value" id="countReserved">00</span>
+      <span class="board-label">Reserved</span>
+    </div>
+    <div class="board-divider" aria-hidden="true"></div>
+    <div class="board-stat">
+      <span class="board-value" id="countOccupied">00</span>
+      <span class="board-label">Occupied</span>
+    </div>
+  </section>
+
+  <main class="layout">
+    <section class="lot-section">
+      <div class="section-head">
+        <h2 class="section-title">Parking bays</h2>
+        <div class="legend">
+          <span class="legend-item"><i class="swatch available"></i>Available</span>
+          <span class="legend-item"><i class="swatch reserved"></i>Reserved</span>
+          <span class="legend-item"><i class="swatch occupied"></i>Occupied</span>
+        </div>
+      </div>
+      <div class="lane-marking" aria-hidden="true"></div>
+      <div class="lot-grid" id="lotGrid"><!-- spots injected by app.js --></div>
+    </section>
+
+    <aside class="log-section">
+      <h2 class="section-title">Entry log</h2>
+      <div class="ticket-roll" id="entryLog">
+        <p class="log-empty" id="logEmpty">No activity yet.</p>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="ticket-stub" id="ticketStub" role="dialog" aria-modal="true" aria-labelledby="ticketTitle">
+      <button class="ticket-close" id="closeModal" type="button" aria-label="Close">×</button>
+      <div id="ticketContent"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+  <script src="app1.js"></script>
+</body>
+
+</html>
