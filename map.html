@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkEase Dashboard</title>
+
+    <!-- Leaflet CSS (needed for map styling) -->
+    <link rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="map.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href=
+    "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+</head>
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <h2>ParkEase</h2>
+
+        <ul>
+            <li onclick="showSection('parking')">🅿 Find Parking</li>
+            <li onclick="showSection('bookings')">📅 My Bookings</li>
+            <li onclick="showSection('profile')">👤 Profile</li>
+        </ul>
+
+    </div>
+
+
+    <!-- Main content -->
+    <div class="main-content">
+
+
+        <!-- Top bar -->
+        <div class="top-bar">
+
+            <input 
+            type="text"
+            id="searchInput"
+            placeholder="Search city, district, or PIN code">
+
+            <div id="suggestions"></div>
+            
+            <button id="searchBtn">🔍 Search</button>
+
+            <select id="vehicleFilter">
+
+                <option value="all">
+                    All Vehicles
+                </option>
+
+                <option value="Car">
+                    Car
+                </option>
+
+                <option value="Bike">
+                    Bike
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- Parking cards -->
+        <div id="parking-list">
+
+            <!-- Firebase parking cards will appear here -->
+
+        </div>
+
+        <!-- Bookings Section -->
+<div id="bookings-section" class="dashboard-section" style="display:none;">
+
+    <h2>
+        📅 My Bookings
+    </h2>
+
+    <div id="booking-list" class="booking-card">
+
+        <h3>No Bookings Yet</h3>
+
+        <p>
+            Your booked parking spaces will appear here.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- Profile Section -->
+<div id="profile-section" class="dashboard-section" style="display:none;">
+
+    <div class="profile-card">
+
+        <div class="profile-icon">
+            👤
+        </div>
+
+        <h2>My Profile</h2>
+
+        <div class="profile-info">
+
+            <p>
+                <strong>Name:</strong>
+                <span id="user-name">Loading...</span>
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                <span id="user-email">Loading...</span>
+            </p>
+
+            <p>
+                <strong>Role:</strong>
+                <span id="user-role">Loading...</span>
+            </p>
+
+        </div>
+
+        <button id="logout-btn">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+    <!-- Map Section -->
+<div class="map-container">
+
+    <div id="map"></div>
+
+</div>
+
+
+</div>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Our JavaScript -->
+<script type="module" src="map.js"></script>
+
+</body>
+
+</html>
