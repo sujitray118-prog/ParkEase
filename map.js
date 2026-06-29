@@ -11,7 +11,9 @@ import {
     addDoc,
     updateDoc,
     increment,
-    serverTimestamp
+    serverTimestamp,
+    query,
+    where
 } from 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -514,6 +516,8 @@ onAuthStateChanged(auth, async (user) => {
                 document.getElementById("user-role").textContent =
                     userData.role;
 
+                    loadBookings();
+
             }
 
             else {
@@ -575,6 +579,10 @@ window.bookParking = async function(parkingId, parkingName) {
 
     const user = auth.currentUser;
 
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const userData = userDoc.data();
+    console.log("User Data:", userData);
+
     if (!user) {
         alert("Please login first!");
         return;
@@ -583,9 +591,38 @@ window.bookParking = async function(parkingId, parkingName) {
     try {
 
         // Save booking
+
+        const parkingRef = doc(db, "parkingzone", parkingId);
+
+        const parkingSnap = await getDoc(parkingRef);
+
+        const parkingData = parkingSnap.data();
+        console.log("Parking Data:", parkingData);
+        
+        // Check if user already has an active booking
+
+        const bookingQuery = query(
+            collection(db, "bookings"),
+            where("userId", "==", user.uid),
+            where("parkingId", "==", parkingId),
+            where("status", "==", "Active")
+        );
+
+        const existingBooking = await getDocs(bookingQuery);
+
+        if (!existingBooking.empty) {
+
+            alert("❌ You already have an active booking for this parking.");
+
+            return;
+
+        }
+
         await addDoc(collection(db, "bookings"), {
 
             userId: user.uid,
+            userName: userData.name,
+            ownerId: parkingData.OwnerID,
             parkingId: parkingId,
             parkingName: parkingName,
             bookingTime: serverTimestamp(),
@@ -594,7 +631,6 @@ window.bookParking = async function(parkingId, parkingName) {
         });
 
         // Reduce slot by 1
-        const parkingRef = doc(db, "parkingzone", parkingId);
 
         console.log("Updating parking:", parkingId);
 
@@ -751,3 +787,134 @@ else {
 
 });
 
+async function loadBookings() {
+
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    const bookingList = document.getElementById("booking-list");
+
+    bookingList.innerHTML = "<p>Loading bookings...</p>";
+
+    try {
+
+        const q = query(
+            collection(db, "bookings"),
+            where("userId", "==", user.uid)
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+
+            bookingList.innerHTML = `
+                <p>No bookings yet.</p>
+            `;
+
+            return;
+        }
+
+        let html = "";
+
+        snapshot.forEach((bookingDoc) => {
+
+            const booking = bookingDoc.data();
+
+            let bookingDate = "Time not available";
+
+            if (
+                booking.bookingTime &&
+                typeof booking.bookingTime.toDate === "function"
+            ) {
+
+                bookingDate =
+                    booking.bookingTime.toDate().toLocaleString();
+
+            }
+
+            html += `
+
+            <div class="parking-card">
+
+                <h3>${booking.parkingName}</h3>
+
+                <p><strong>Status:</strong> ${booking.status}</p>
+
+                <p><strong>Booked On:</strong> ${bookingDate}</p>
+
+                ${
+                    booking.status === "Active"
+                    ?
+
+                    `<button onclick="cancelBooking('${bookingDoc.id}','${booking.parkingId}')">
+                        ❌ Cancel Booking
+                    </button>`
+
+                    :
+
+                    ""
+             }
+
+        </div>
+
+        `;
+
+        });
+
+        bookingList.innerHTML = html;
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        bookingList.innerHTML = "<p>Error loading bookings.</p>";
+
+    }
+
+}
+
+window.cancelBooking = async function(bookingId, parkingId) {
+
+    const confirmCancel = confirm(
+        "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+
+        // Change booking status
+        const bookingRef = doc(db, "bookings", bookingId);
+
+        await updateDoc(bookingRef, {
+            status: "Cancelled"
+        });
+
+        // Increase parking slot
+        const parkingRef = doc(db, "parkingzone", parkingId);
+
+        await updateDoc(parkingRef, {
+            AvailableSlots: increment(1)
+        });
+
+        alert("✅ Booking cancelled successfully!");
+
+        // Refresh UI
+        allParking = [];
+        loadParkingZones();
+        loadBookings();
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        alert("Failed to cancel booking.");
+
+    }
+
+};

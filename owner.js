@@ -11,7 +11,8 @@ import {
     where,
     doc,
     getDoc,
-    deleteDoc
+    deleteDoc,
+    documentId
 } from 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -146,8 +147,12 @@ async function loadMyParking() {
     const querySnapshot = await getDocs(q);
 
     // Update total parking count on Dashboard
-    document.getElementById("totalParking").textContent =
-        querySnapshot.size;
+    // Update dashboard cards
+document.getElementById("totalParking").textContent =
+    querySnapshot.size;
+
+let totalAvailableSlots = 0;
+let totalEarnings = 0;
     let data = "";
 
 
@@ -155,6 +160,8 @@ async function loadMyParking() {
 
         const parking = parkingDoc.data();
         const parkingId = parkingDoc.id;
+
+        totalAvailableSlots += Number(parking.AvailableSlots);
 
         data += `
             <div class="parking-card">
@@ -185,6 +192,8 @@ async function loadMyParking() {
 
     });
 
+    document.getElementById("availableSlots").textContent =
+    totalAvailableSlots;
 
     if (data === "") {
 
@@ -237,6 +246,8 @@ onAuthStateChanged(auth, async (user) => {
 
         // Load owner's parking
         loadMyParking();
+        loadDashboardStats();
+        loadRecentBookings();
 
 
         // Get owner details from Firestore
@@ -268,6 +279,131 @@ onAuthStateChanged(auth, async (user) => {
     }
 
 });
+
+async function loadDashboardStats() {
+
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    // Get all parking belonging to this owner
+    const parkingQuery = query(
+        collection(db, "parkingzone"),
+        where("OwnerID", "==", user.uid)
+    );
+
+    const parkingSnapshot = await getDocs(parkingQuery);
+    let parkingPrices = {};
+
+    // -------------------
+    // Total Parking
+    // -------------------
+
+    document.getElementById("totalParking").textContent =
+        parkingSnapshot.size;
+
+    // -------------------
+    // Available Slots
+    // -------------------
+
+    let totalAvailable = 0;
+
+    let parkingIds = [];
+
+    parkingSnapshot.forEach((parkingDoc) => {
+
+        const parking = parkingDoc.data();
+
+        totalAvailable += Number(parking.AvailableSlots);
+
+        parkingPrices[parkingDoc.id] = Number(parking.Price);
+
+        // Store parking IDs
+        parkingIds.push(parkingDoc.id);
+
+    });
+
+    document.getElementById("availableSlots").textContent =
+        totalAvailable;
+
+    // -------------------
+    // Total Bookings
+    // -------------------
+
+    const bookingSnapshot =
+        await getDocs(collection(db, "bookings"));
+
+    let bookingCount = 0;
+    let totalEarnings = 0;
+
+    bookingSnapshot.forEach((bookingDoc) => {
+
+    const booking = bookingDoc.data();
+
+    if (
+    parkingIds.includes(booking.parkingId) &&
+    booking.status === "Active"
+    ) {
+
+        bookingCount++;
+        totalEarnings += parkingPrices[booking.parkingId] || 0;
+
+        let bookingDate = "Time not available";
+
+        if (
+            booking.bookingTime &&
+            typeof booking.bookingTime.toDate === "function"
+        ) {
+
+            bookingDate =
+                booking.bookingTime
+                .toDate()
+                .toLocaleString();
+
+        }
+
+        recentHtml += `
+
+        <div class="parking-card">
+
+            <h3>🚗 ${booking.parkingName}</h3>
+
+            <p>
+                <strong>Booked By:</strong>
+                ${booking.userName || "Unknown"}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                ${booking.status}
+            </p>
+
+            <p>
+                <strong>Booked On:</strong>
+                ${bookingDate}
+            </p>
+
+        </div>
+
+        `;
+
+    }
+
+});
+
+    document.getElementById("totalBookings").textContent =
+        bookingCount;
+
+    document.getElementById("recentBookings").innerHTML =
+        recentHtml;    
+
+    // -------------------
+    // Earnings
+    // -------------------
+
+    document.getElementById("totalEarnings").textContent =
+        "₹0" + totalEarnings;
+}
 
 // Make sidebar navigation work
 window.showSection = function(section) {
@@ -302,24 +438,62 @@ window.showSection = function(section) {
 
 };
 
-document.getElementById("logoutBtn")
-.addEventListener("click", async () => {
+async function loadRecentBookings() {
 
-    try {
+    const user = auth.currentUser;
 
-        await signOut(auth);
+    if (!user) return;
 
-        alert("Logged out successfully!");
+    const recentBookings =
+        document.getElementById("recentBookings");
 
-        window.location.href = "login.html";
+    recentBookings.innerHTML = "Loading...";
 
+    const q = query(
+        collection(db, "bookings"),
+        where("ownerId", "==", user.uid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+
+        recentBookings.innerHTML =
+            "<p>No bookings yet.</p>";
+
+        return;
     }
-    catch(error) {
 
-        console.error(error);
+    let html = "";
 
-        alert("Logout failed!");
+    snapshot.forEach(doc => {
 
-    }
+        const booking = doc.data();
 
-});
+        let bookingDate = "Time not available";
+
+        if (
+            booking.bookingTime &&
+            typeof booking.bookingTime.toDate === "function"
+        ) {
+           bookingDate =
+               booking.bookingTime.toDate().toLocaleString();
+        }
+
+        html += `
+            <div class="parking-card">
+
+                <h3>${booking.parkingName}</h3>
+
+                <p><strong>Booked By:</strong> ${booking.userName || "N/A"}</p>
+
+                <p><strong>Status:</strong> ${booking.status || "N/A"}</p>
+
+                <p><strong>Booked On:</strong> ${bookingDate}</p>
+
+            </div>
+        `;
+    });
+
+    recentBookings.innerHTML = html;
+}

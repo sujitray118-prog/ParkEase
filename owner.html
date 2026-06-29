@@ -46,77 +46,90 @@
         <div class="dashboard-cards">
 
             <div class="card">
-                <h3>Total Parking</h3>
+                <h3>🅿 Total Parking</h3>
                 <p id="totalParking">0</p>
             </div>
 
             <div class="card">
-                <h3>Total Earnings</h3>
-                <p>₹0</p>
+                <h3>🚗 Available Slots</h3>
+                <p id="availableSlots">0</p>
+            </div>
+
+            <div class="card">
+                <h3>📅 Total Bookings</h3>
+                <p id="totalBookings">0</p>
+            </div>
+
+            <div class="card">
+                <h3>💰 Total Earnings</h3>
+                <p id="totalEarnings">₹0</p>
             </div>
 
         </div>
 
-        <div class="form-container">
+        <div class="card" style="margin-top:30px;">
 
-            <h2>Add Your Parking Space</h2>
+            <h2>📋 Recent Bookings</h2>
 
-            <form id="parkingForm">
+            <div id="recentBookings">
 
-                <input type="text" id="parkingName"
-                placeholder="🅿 Parking Name" required>
+                <p>No bookings yet.</p>
 
-                <input type="number" id="slots"
-                placeholder="🚗 Total Parking Slots" required>
-
-                <input type="number" id="price"
-                placeholder="💰 Price per hour" required>
-
-                <select id="vehicle" required>
-
-                    <option value="">
-                        Select Vehicle Type
-                    </option>
-
-                    <option value="Car">
-                        Car
-                    </option>
-
-                    <option value="Bike">
-                        Bike
-                    </option>
-
-                    <option value="Both">
-                        Both
-                    </option>
-
-                </select>
-
-                <input type="number" step="any"
-                id="latitude"
-                placeholder="📍 Latitude" required>
-
-                <input type="number" step="any"
-                id="longitude"
-                placeholder="📍 Longitude" required>
-
-                <button type="submit">
-                    Add Parking
-                </button>
-
-            </form>
+            </div>
 
         </div>
 
-    </div>
+</div>
 
 
     <!-- My Parking -->
     <div id="parking-section" style="display:none;">
 
-        <h1>My Parking</h1>
+    <h1>My Parking</h1>
 
-        <div id="myParkingList">
+    <div class="form-container">
+
+        <h2>Add Your Parking Space</h2>
+
+        <form id="parkingForm">
+
+            <input type="text" id="parkingName"
+            placeholder="🅿 Parking Name" required>
+
+            <input type="number" id="slots"
+            placeholder="🚗 Total Parking Slots" required>
+
+            <input type="number" id="price"
+            placeholder="💰 Price per hour" required>
+
+            <select id="vehicle" required>
+
+                <option value="">Select Vehicle Type</option>
+                <option value="Car">Car</option>
+                <option value="Bike">Bike</option>
+                <option value="Both">Both</option>
+
+            </select>
+
+            <input type="number" step="any"
+            id="latitude"
+            placeholder="📍 Latitude" required>
+
+            <input type="number" step="any"
+            id="longitude"
+            placeholder="📍 Longitude" required>
+
+            <button type="submit">
+                Add Parking
+            </button>
+
+        </form>
+
+    </div>
+
+    <h2 style="margin-top:30px;">Your Parking Spaces</h2>
+
+    <div id="myParkingList">
             <!-- Owner parking cards will come from Firebase -->
         </div>
 
