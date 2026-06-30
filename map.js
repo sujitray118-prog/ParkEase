@@ -358,6 +358,13 @@ function displayParking(parkingList) {
                 </strong>
             </p>
 
+            <p>
+                💰 Price:
+                <strong>
+                    ₹${parking.Price}/hour
+                </strong>
+            </p>
+
             ${parking.distance !== undefined ? `
             <p>
                 📍 ${parking.distance.toFixed(2)} km away
