@@ -286,123 +286,136 @@ async function loadDashboardStats() {
 
     if (!user) return;
 
-    // Get all parking belonging to this owner
+    // ==========================
+    // Owner Parking
+    // ==========================
+
     const parkingQuery = query(
         collection(db, "parkingzone"),
         where("OwnerID", "==", user.uid)
     );
 
     const parkingSnapshot = await getDocs(parkingQuery);
-    let parkingPrices = {};
-
-    // -------------------
-    // Total Parking
-    // -------------------
 
     document.getElementById("totalParking").textContent =
         parkingSnapshot.size;
 
-    // -------------------
-    // Available Slots
-    // -------------------
+    let parkingIds = [];
+    let parkingPrices = {};
 
     let totalAvailable = 0;
-
-    let parkingIds = [];
 
     parkingSnapshot.forEach((parkingDoc) => {
 
         const parking = parkingDoc.data();
 
-        totalAvailable += Number(parking.AvailableSlots);
-
-        parkingPrices[parkingDoc.id] = Number(parking.Price);
-
-        // Store parking IDs
         parkingIds.push(parkingDoc.id);
+
+        parkingPrices[parkingDoc.id] =
+            Number(parking.Price);
+
+        totalAvailable +=
+            Number(parking.AvailableSlots);
 
     });
 
     document.getElementById("availableSlots").textContent =
         totalAvailable;
 
-    // -------------------
-    // Total Bookings
-    // -------------------
+    // ==========================
+    // Bookings
+    // ==========================
 
     const bookingSnapshot =
         await getDocs(collection(db, "bookings"));
 
     let bookingCount = 0;
+
     let totalEarnings = 0;
+
+    let recentHtml = "";
 
     bookingSnapshot.forEach((bookingDoc) => {
 
-    const booking = bookingDoc.data();
-
-    if (
-    parkingIds.includes(booking.parkingId) &&
-    booking.status === "Active"
-    ) {
-
-        bookingCount++;
-        totalEarnings += parkingPrices[booking.parkingId] || 0;
-
-        let bookingDate = "Time not available";
+        const booking = bookingDoc.data();
 
         if (
-            booking.bookingTime &&
-            typeof booking.bookingTime.toDate === "function"
+            parkingIds.includes(booking.parkingId) &&
+            booking.status === "Active"
         ) {
 
-            bookingDate =
-                booking.bookingTime
-                .toDate()
-                .toLocaleString();
+            bookingCount++;
+
+            const hours =
+                booking.hours || 1;
+
+            totalEarnings +=
+                (parkingPrices[booking.parkingId] || 0) * hours;
+
+            let bookingDate = "N/A";
+
+            if (
+                booking.bookingTime &&
+                booking.bookingTime.toDate
+            ) {
+
+                bookingDate =
+                    booking.bookingTime
+                    .toDate()
+                    .toLocaleString();
+
+            }
+
+            recentHtml += `
+
+            <div class="parking-card">
+
+                <h3>${booking.parkingName}</h3>
+
+                <p>
+                    <strong>Booked By:</strong>
+                    ${booking.userName || "Unknown"}
+                </p>
+
+                <p>
+                    <strong>Hours:</strong>
+                    ${hours}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${booking.status}
+                </p>
+
+                <p>
+                    <strong>Booked On:</strong>
+                    ${bookingDate}
+                </p>
+
+            </div>
+
+            `;
 
         }
 
-        recentHtml += `
-
-        <div class="parking-card">
-
-            <h3>🚗 ${booking.parkingName}</h3>
-
-            <p>
-                <strong>Booked By:</strong>
-                ${booking.userName || "Unknown"}
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                ${booking.status}
-            </p>
-
-            <p>
-                <strong>Booked On:</strong>
-                ${bookingDate}
-            </p>
-
-        </div>
-
-        `;
-
-    }
-
-});
+    });
 
     document.getElementById("totalBookings").textContent =
         bookingCount;
 
-    document.getElementById("recentBookings").innerHTML =
-        recentHtml;    
-
-    // -------------------
-    // Earnings
-    // -------------------
-
     document.getElementById("totalEarnings").textContent =
-        "₹0" + totalEarnings;
+        "₹" + totalEarnings;
+
+    if (recentHtml === "") {
+
+        recentHtml =
+            "<p>No bookings yet.</p>";
+
+    }
+
+    document.getElementById("recentBookings").innerHTML =
+        recentHtml;
+
 }
 
 // Make sidebar navigation work
@@ -487,7 +500,9 @@ async function loadRecentBookings() {
 
                 <p><strong>Booked By:</strong> ${booking.userName || "N/A"}</p>
 
-                <p><strong>Status:</strong> ${booking.status || "N/A"}</p>
+                <p><strong>Hours:</strong> ${booking.hours || 1}</p>
+
+                <p><strong>Status:</strong> ${booking.status}</p>
 
                 <p><strong>Booked On:</strong> ${bookingDate}</p>
 

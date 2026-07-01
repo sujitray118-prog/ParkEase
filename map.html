@@ -149,6 +149,46 @@
 
 </div>
 
+<!-- Booking Modal -->
+<div id="bookingModal" class="modal" style="display:none;">
+
+    <div class="modal-content">
+
+        <h2>Book Parking</h2>
+
+        <p>Select Booking Hours</p>
+
+        <select id="hoursSelect">
+
+            <option value="1">1 Hour</option>
+            <option value="2">2 Hours</option>
+            <option value="3">3 Hours</option>
+            <option value="4">4 Hours</option>
+            <option value="5">5 Hours</option>
+
+        </select>
+
+        <h3>
+            Total Price:
+            ₹<span id="totalPrice">0</span>
+        </h3>
+
+        <div class="modal-buttons">
+
+            <button id="cancelBookingBtn">
+                Cancel
+            </button>
+
+            <button id="confirmBookingBtn">
+                Confirm
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 

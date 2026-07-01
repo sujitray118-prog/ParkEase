@@ -42,6 +42,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 let currentUserData = null;
+
+// Booking Modal Variables
+let selectedParkingId = "";
+let selectedParkingName = "";
+let selectedParkingPrice = 0;
+
 //Create Map
 const map = L.map("map").setView([22.95, 88.45], 15);
 
@@ -391,9 +397,10 @@ function displayParking(parkingList) {
                 `
                 <button
                 class="book-btn"
-                onclick="bookParking(
+                onclick="openBookingModal(
                 '${parking.id}',
-                '${parking.Name}'
+                '${parking.Name}',
+                ${parking.Price}
                 )"
                 >
                 📅 Book Now
@@ -581,6 +588,53 @@ document.getElementById("logout-btn")
 
 });
 
+// ============================
+// Open Booking Modal
+// ============================
+
+window.openBookingModal = function(id, name, price){
+
+    selectedParkingId = id;
+    selectedParkingName = name;
+    selectedParkingPrice = price;
+
+    document.getElementById("bookingModal").style.display = "flex";
+
+    document.getElementById("hoursSelect").value = 1;
+
+    document.getElementById("totalPrice").innerHTML = price;
+
+}
+
+// Update total price when hours change
+document.getElementById("hoursSelect").addEventListener("change", () => {
+
+    const hours = Number(document.getElementById("hoursSelect").value);
+
+    document.getElementById("totalPrice").innerHTML =
+        hours * selectedParkingPrice;
+
+});
+
+// Close popup
+document.getElementById("cancelBookingBtn").onclick = () => {
+
+    document.getElementById("bookingModal").style.display = "none";
+
+};
+
+// Confirm booking
+document.getElementById("confirmBookingBtn").onclick = () => {
+
+    document.getElementById("bookingModal").style.display = "none";
+
+    bookParking(
+        selectedParkingId,
+        selectedParkingName
+    );
+
+};
+
 // Book a parking slot
 window.bookParking = async function(parkingId, parkingName) {
 
@@ -625,15 +679,38 @@ window.bookParking = async function(parkingId, parkingName) {
 
         }
 
+        const hours =
+        Number(document.getElementById("hoursSelect").value);
+
+        const bookingTime = new Date();
+
+        const endTime = new Date(
+            bookingTime.getTime() + hours * 60 * 60 * 1000
+        );
+
         await addDoc(collection(db, "bookings"), {
 
             userId: user.uid,
             userName: userData.name,
+
             ownerId: parkingData.OwnerID,
+
             parkingId: parkingId,
+
             parkingName: parkingName,
-            bookingTime: serverTimestamp(),
-            status: "Active"
+
+            latitude: Number(parkingData.Latitude),
+
+            longitude: Number(parkingData.Longitude),
+
+            bookingTime: bookingTime,
+
+            endTime: endTime,
+
+            hours: hours,
+
+            status: "Booked",
+            parkingStarted: false
 
         });
 
@@ -652,14 +729,16 @@ window.bookParking = async function(parkingId, parkingName) {
         // Refresh parking list
         allParking = [];
         loadParkingZones();
+        loadBookings();
+        showSection("bookings");
 
     }
 
     catch(error) {
 
-        console.error(error);
+        console.error("FULL ERROR:", error);
 
-        alert("Booking Failed");
+        alert(error.message);
 
     }
 
@@ -821,12 +900,21 @@ async function loadBookings() {
 
             return;
         }
-
+        const bookingTimers = [];
         let html = "";
 
         snapshot.forEach((bookingDoc) => {
 
             const booking = bookingDoc.data();
+
+            let endTime = booking.endTime.toDate();
+            let timerId = "timer-" + bookingDoc.id;
+
+            bookingTimers.push({
+                id: timerId,
+                endTime: endTime,
+                status: booking.status
+            });
 
             let bookingDate = "Time not available";
 
@@ -840,36 +928,133 @@ async function loadBookings() {
 
             }
 
+            let remainingTime = "";
+
+            if (booking.endTime && typeof booking.endTime.toDate === "function") {
+
+                const now = new Date();
+                const end = booking.endTime.toDate();
+
+                const diff = end - now;
+
+                if (diff > 0) {
+
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    remainingTime =
+                        `${hours}h ${minutes}m ${seconds}s`;
+
+                } else {
+
+                    remainingTime = "Expired";
+
+                }
+            }
+
             html += `
 
             <div class="parking-card">
-
                 <h3>${booking.parkingName}</h3>
 
                 <p><strong>Status:</strong> ${booking.status}</p>
 
                 <p><strong>Booked On:</strong> ${bookingDate}</p>
 
+                <p>
+                    <strong>Time Left:</strong>
+                    <span id="${timerId}"></span>
+                </p>
+
                 ${
-                    booking.status === "Active"
-                    ?
+                booking.status === "Reserved"
 
-                    `<button onclick="cancelBooking('${bookingDoc.id}','${booking.parkingId}')">
-                        ❌ Cancel Booking
-                    </button>`
+                ?
 
-                    :
+                `
+                <button onclick="cancelBooking('${bookingDoc.id}','${booking.parkingId}')">
+                ❌ Cancel Booking
+                </button>
+                `
 
-                    ""
-             }
+                :
 
-        </div>
+                booking.status === "Active"
 
-        `;
+                ?
+
+                `
+                <button onclick="cancelBooking('${bookingDoc.id}','${booking.parkingId}')">
+                ❌ Cancel Booking
+                </button>
+                `
+
+                :
+
+                ""
+                }
+
+            </div>
+
+            `;
 
         });
 
         bookingList.innerHTML = html;
+        bookingTimers.forEach(timer => {
+
+            function updateTimer() {
+
+                const now = new Date();
+                const diff = timer.endTime - now;
+
+                const element = document.getElementById(timer.id);
+
+                if (!element) return;
+
+                if (diff <= 0) {
+
+                    element.innerHTML = "Expired";
+                    return;
+
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                element.innerHTML =
+                    `${hours}h ${minutes}m ${seconds}s`;
+
+            }
+
+            updateTimer();
+
+            if (timer.status !== "Active") {
+
+                document.getElementById(timer.id).innerHTML =
+                "Waiting to start";
+
+                return;
+
+            }
+
+            updateTimer();
+
+            const interval = setInterval(() => {
+
+                updateTimer();
+
+                if (
+                    document.getElementById(timer.id)?.innerHTML === "Expired"
+                ) {
+                    clearInterval(interval);
+                }
+
+            }, 1000);
+
+        });
 
     }
 
@@ -882,6 +1067,7 @@ async function loadBookings() {
     }
 
 }
+
 
 window.cancelBooking = async function(bookingId, parkingId) {
 
