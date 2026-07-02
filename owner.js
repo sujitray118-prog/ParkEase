@@ -512,3 +512,25 @@ async function loadRecentBookings() {
 
     recentBookings.innerHTML = html;
 }
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+    try{
+
+        await signOut(auth);
+
+        alert("Logged out successfully!");
+
+        window.location.href = "login.html";
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("Logout Failed");
+
+    }
+
+});

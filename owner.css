@@ -172,3 +172,121 @@ button:hover {
     box-shadow: 0 0 8px rgba(0, 119, 255, 0.3);
 
 }
+
+.profile-card{
+
+    max-width:600px;
+
+    margin:auto;
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.profile-avatar{
+
+    width:90px;
+
+    height:90px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:#e8f0ff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:40px;
+
+    margin-bottom:20px;
+
+}
+
+.profile-details p{
+
+    margin:18px 0;
+
+}
+
+.payment-note{
+
+    color:#666;
+
+    margin-bottom:15px;
+
+}
+
+.qr-preview-box{
+
+    margin-top:20px;
+
+    margin-bottom:20px;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+#qrPreview{
+
+    display:none;
+
+    width:220px;
+
+    border-radius:12px;
+
+    border:2px solid #ddd;
+
+}
+
+#saveProfileBtn{
+
+    width:100%;
+
+    background:#2e7d32;
+
+    color:white;
+
+    border:none;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+.logout-btn{
+
+    width:100%;
+
+    margin-top:15px;
+
+    background:#d32f2f;
+
+    color:white;
+
+    border:none;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+}

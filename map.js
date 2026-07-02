@@ -683,6 +683,9 @@ window.bookParking = async function(parkingId, parkingName) {
         Number(document.getElementById("hoursSelect").value);
 
         const bookingTime = new Date();
+        const reservationExpiry = new Date(
+            bookingTime.getTime() + 15 * 60 * 1000
+        );
 
         const endTime = new Date(
             bookingTime.getTime() + hours * 60 * 60 * 1000
@@ -705,11 +708,13 @@ window.bookParking = async function(parkingId, parkingName) {
 
             bookingTime: bookingTime,
 
+            reservationExpiry: reservationExpiry,
+
             endTime: endTime,
 
             hours: hours,
 
-            status: "Booked",
+            status: "Reserved",
             parkingStarted: false
 
         });
@@ -980,7 +985,7 @@ async function loadBookings() {
 
                 :
 
-                booking.status === "Active"
+                booking.status === "Reserved"
 
                 ?
 
@@ -1111,3 +1116,124 @@ window.cancelBooking = async function(bookingId, parkingId) {
     }
 
 };
+
+// Auto check every 5 seconds
+setInterval(checkReservedBookings,5000);
+
+// Auto check reservation timeout every 10 seconds
+setInterval(checkReservationTimeout,10000);
+
+async function checkReservedBookings() {
+
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    const q = query(
+        collection(db, "bookings"),
+        where("userId", "==", user.uid),
+        where("status", "==", "Reserved")
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) return;
+
+    navigator.geolocation.getCurrentPosition(async(position)=>{
+
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        snapshot.forEach(async(bookingDoc)=>{
+
+            const booking = bookingDoc.data();
+
+            const distance = calculateDistance(
+                userLat,
+                userLng,
+                booking.latitude,
+                booking.longitude
+            );
+
+            console.log(
+                booking.parkingName,
+                distance.toFixed(3),
+                "km"
+            );
+
+            if(distance <= 0.05){
+
+                const startTime = new Date();
+
+                const endTime = new Date(
+                    startTime.getTime() +
+                    booking.hours * 60 * 60 * 1000
+                );
+
+                await updateDoc(
+                    doc(db,"bookings",bookingDoc.id),
+                    {
+                        status:"Active",
+                        bookingTime:startTime,
+                        endTime:endTime
+                    }
+                );
+
+                alert("✅ You have reached the parking. Parking timer has started.");
+
+                loadBookings();
+
+            }
+
+        });
+
+    });
+
+}
+
+
+async function checkReservationTimeout() {
+
+    const q = query(
+        collection(db, "bookings"),
+        where("status", "==", "Reserved")
+    );
+
+    const snapshot = await getDocs(q);
+
+    const now = new Date();
+
+    snapshot.forEach(async(bookingDoc)=>{
+
+        const booking = bookingDoc.data();
+
+        const expiry = booking.reservationExpiry.toDate();
+
+        if(now >= expiry){
+
+            // Cancel booking
+            await updateDoc(
+                doc(db,"bookings",bookingDoc.id),
+                {
+                    status:"Cancelled"
+                }
+            );
+
+            // Return parking slot
+            await updateDoc(
+                doc(db,"parkingzone",booking.parkingId),
+                {
+                    AvailableSlots: increment(1)
+                }
+            );
+
+            console.log(
+                booking.parkingName,
+                "Reservation expired."
+            );
+
+        }
+
+    });
+
+}

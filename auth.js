@@ -36,6 +36,27 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Show extra fields only for owners
+const ownerRadio = document.getElementById("owner");
+const driverRadio = document.getElementById("driver");
+const ownerFields = document.getElementById("ownerExtraFields");
+
+if(ownerRadio){
+
+    ownerRadio.addEventListener("change",()=>{
+
+        ownerFields.style.display="block";
+
+    });
+
+    driverRadio.addEventListener("change",()=>{
+
+        ownerFields.style.display="none";
+
+    });
+
+}
+
 
 // Signup form
 const signupForm = document.getElementById("signupForm");
@@ -53,6 +74,42 @@ if (signupForm) {
             'input[name="role"]:checked'
         ).value;
 
+        let vehicleType = "";
+        let vehicleNumber = "";
+
+        if(role==="driver"){
+
+            const selectedVehicle =
+            document.querySelector('input[name="vehicleType"]:checked');
+
+            if (!selectedVehicle) {
+                alert("Select vehicle type");
+                return;
+            }
+
+            vehicleType = selectedVehicle.value;
+
+            vehicleNumber =
+                document.getElementById("vehicleNumber").value
+                .trim()
+                .toUpperCase();
+
+            if(vehicleType===""){
+
+                alert("Select vehicle type");
+                return;
+
+            }
+
+            if(vehicleNumber===""){
+
+                alert("Enter vehicle number");
+                return;
+
+            }
+
+        }
+
         try {
 
             // Create account in Firebase Authentication
@@ -69,10 +126,19 @@ if (signupForm) {
             await setDoc(
                 doc(db, "users", user.uid),
                 {
-                    name: name,
-                    email: email,
-                    role: role,
-                    createdAt: new Date()
+
+                    name:name,
+
+                    email:email,
+
+                    role:role,
+
+                    vehicleType:vehicleType,
+
+                    vehicleNumber:vehicleNumber,
+
+                    createdAt:new Date()
+
                 }
             );
 
@@ -80,13 +146,14 @@ if (signupForm) {
 
             // Redirect based on role
             if (role === "driver") {
-                window.location.href = "map.html";
-            } else {
-                alert(
-                    "Owner dashboard coming soon!"
-                );
-            }
 
+                window.location.href = "map.html";
+
+            } else {
+
+                window.location.href = "owner.html";
+
+            }
         } catch (error) {
             alert(
                 "Error: " + error.message

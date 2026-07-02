@@ -84,6 +84,7 @@
                     </label>
 
 
+
                     <label>
                         <input 
                         type="radio"
@@ -95,6 +96,44 @@
                     </label>
 
                 </div>
+
+                <div id="driverFields" style="display:none; margin-top:20px;">
+
+                    <div class="input-group">
+
+                        <label>Vehicle Type</label>
+
+                        <label>
+                            <input
+                            type="radio"
+                            name="vehicleType"
+                            value="Car">
+                            Car
+                        </label>
+
+                        <label>
+                            <input
+                            type="radio"
+                            name="vehicleType"
+                            value="Bike">
+                            Bike
+                        </label>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Vehicle Number</label>
+
+                        <input
+                        type="text"
+                        id="vehicleNumber"
+                        placeholder="WB24AB1234">
+
+                    </div>
+
+                </div>
+                
 
 
                 <button type="submit" class="auth-btn">
@@ -119,6 +158,27 @@
         </div>
 
     </div>
+
+    <script>
+
+    const driverRadio = document.getElementById("driver");
+    const ownerRadio = document.getElementById("owner");
+    const driverFields = document.getElementById("driverFields");
+
+    driverRadio.addEventListener("change",()=>{
+
+        driverFields.style.display="block";
+
+    });
+
+    ownerRadio.addEventListener("change",()=>{
+
+        driverFields.style.display="none";
+
+    });
+
+    </script>
+
     <script type="module" src="auth.js"></script>
 
 </body>
